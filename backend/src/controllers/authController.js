@@ -167,49 +167,62 @@ export const verifyEmail = async (req, res) => {
 // Resend verification email
 export const resendVerification = async (req, res) => {
   try {
+    console.log('🟡 [Backend] Resend verification request received');
     const { email } = req.body;
+    console.log('🟡 [Backend] Email from request:', email);
 
     if (!email) {
+      console.log('🔴 [Backend] No email provided');
       return res.status(400).json({ message: 'Email is required' });
     }
 
     // Find user by email
+    console.log('🟡 [Backend] Looking for user with email:', email);
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('🔴 [Backend] User not found');
       return res.status(404).json({ message: 'User not found' });
     }
+    console.log('🟢 [Backend] User found:', user.email, 'Verified:', user.isEmailVerified);
 
     // Check if already verified
     if (user.isEmailVerified) {
+      console.log('🔴 [Backend] Email already verified');
       return res.status(400).json({ message: 'Email is already verified' });
     }
 
     // Generate new verification token
+    console.log('🟡 [Backend] Generating new verification token');
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
     user.emailVerificationToken = emailVerificationToken;
     await user.save();
+    console.log('🟢 [Backend] New token generated and saved');
 
     // Send verification email
+    console.log('🟡 [Backend] Attempting to send verification email');
     try {
       const emailResult = await resendVerificationEmail(email, emailVerificationToken);
+      console.log('🟡 [Backend] Email service result:', emailResult);
+      
       if (emailResult.success) {
+        console.log('🟢 [Backend] Email sent successfully');
         res.json({ message: 'Verification email sent successfully' });
       } else {
-        console.error('Email sending failed:', emailResult.error);
+        console.error('🔴 [Backend] Email sending failed:', emailResult.error);
         res.status(500).json({ 
           message: 'Failed to send verification email', 
           error: emailResult.error 
         });
       }
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      console.error('🔴 [Backend] Email sending exception:', emailError);
       res.status(500).json({ 
         message: 'Failed to send verification email',
         error: emailError.message 
       });
     }
   } catch (error) {
-    console.error('Resend verification error:', error);
+    console.error('🔴 [Backend] Resend verification error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

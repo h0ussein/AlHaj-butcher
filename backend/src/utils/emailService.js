@@ -113,29 +113,39 @@ export const sendVerificationEmail = async (email, token) => {
 // Resend verification email
 export const resendVerificationEmail = async (email, token) => {
   try {
+    console.log('🟠 [EmailService] Starting resend verification email');
+    console.log('🟠 [EmailService] Email:', email);
+    console.log('🟠 [EmailService] Token length:', token ? token.length : 'undefined');
+    
     logEmailEnv('resendVerificationEmail:before-check');
     
     // Check if we have the required environment variables
     if (!process.env.EMAIL_PASS) {
-      console.error('EMAIL_PASS not set in production environment');
+      console.error('🔴 [EmailService] EMAIL_PASS not set in production environment');
       return { success: false, error: 'Email service not configured' };
     }
     
     if (!process.env.CLIENT_URL) {
-      console.error('CLIENT_URL not set in production environment');
+      console.error('🔴 [EmailService] CLIENT_URL not set in production environment');
       return { success: false, error: 'Client URL not configured' };
     }
+    
+    console.log('🟢 [EmailService] Environment variables check passed');
 
+    console.log('🟡 [EmailService] Creating transporter');
     const transporter = createTransporter();
+    
     try {
+      console.log('🟡 [EmailService] Verifying transporter connection');
       await transporter.verify();
-      console.log('[EmailDebug] transporter.verify() OK (resend)');
+      console.log('🟢 [EmailService] Transporter verification OK');
     } catch (verifyErr) {
-      console.error('[EmailDebug] transporter.verify() FAILED (resend):', verifyErr?.message);
+      console.error('🔴 [EmailService] Transporter verification FAILED:', verifyErr?.message);
       throw verifyErr;
     }
     
     const verificationUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email/${token}`;
+    console.log('🟡 [EmailService] Verification URL:', verificationUrl);
 
     const mailOptions = {
       from: `"Butcher Shop" <${process.env.EMAIL_USER || 'houssein.ibrahim.3@gmail.com'}>`,
@@ -157,12 +167,13 @@ export const resendVerificationEmail = async (email, token) => {
       `
     };
 
+    console.log('🟡 [EmailService] Sending email...');
     let result;
     try {
       result = await transporter.sendMail(mailOptions);
-      console.log('[EmailDebug] resend sendMail OK:', { messageId: result?.messageId, response: result?.response });
+      console.log('🟢 [EmailService] Email sent successfully:', { messageId: result?.messageId, response: result?.response });
     } catch (sendErr) {
-      console.error('[EmailDebug] resend sendMail FAILED:', sendErr?.message);
+      console.error('🔴 [EmailService] Email sending FAILED:', sendErr?.message);
       throw sendErr;
     }
     return { success: true, messageId: result.messageId };

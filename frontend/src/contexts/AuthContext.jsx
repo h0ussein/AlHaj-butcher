@@ -107,7 +107,9 @@ export const AuthProvider = ({ children }) => {
 
   const resendVerification = async (email) => {
     try {
-      console.log('Resending verification email for:', email);
+      console.log('🔵 [Frontend] Starting resend verification for:', email);
+      console.log('🔵 [Frontend] API URL:', buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION));
+      
       const response = await fetch(buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION), {
         method: 'POST',
         headers: {
@@ -116,17 +118,23 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email })
       });
 
+      console.log('🔵 [Frontend] Response status:', response.status);
+      console.log('🔵 [Frontend] Response ok:', response.ok);
+
       const data = await response.json();
+      console.log('🔵 [Frontend] Response data:', data);
 
       if (response.ok) {
+        console.log('🟢 [Frontend] Success - verification email sent');
         toast.success('Verification email sent successfully!');
         return { success: true };
       } else {
+        console.log('🔴 [Frontend] Error - failed to send verification email');
         toast.error(data.message || 'Failed to send verification email');
         return { success: false, error: data.message };
       }
     } catch (error) {
-      console.error('Resend verification error:', error);
+      console.error('🔴 [Frontend] Network error:', error);
       toast.error('Network error. Please try again.');
       return { success: false, error: 'Network error' };
     }
