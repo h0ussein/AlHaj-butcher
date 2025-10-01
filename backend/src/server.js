@@ -27,6 +27,12 @@ app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }))
+} else {
+  // Production CORS - allow your production domain
+  app.use(cors({
+    origin: process.env.CLIENT_URL || "https://yourdomain.com",
+    credentials: true
+  }))
 }
 
 app.use(express.json())
