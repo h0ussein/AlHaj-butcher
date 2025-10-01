@@ -19,19 +19,21 @@ const logEmailEnv = (context) => {
 
 // Create transporter (configure with your email service)
 const createTransporter = () => {
-  const useSecure = true; // port 465
   const config = {
-    service: 'gmail',
-    port: useSecure ? 465 : 587,
-    secure: useSecure,
-    pool: true,
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // Use STARTTLS
     auth: {
       user: process.env.EMAIL_USER || 'houssein.ibrahim.3@gmail.com',
       pass: process.env.EMAIL_PASS
     },
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      ciphers: 'SSLv3'
     },
+    connectionTimeout: 30000, // 30 seconds
+    greetingTimeout: 15000,   // 15 seconds
+    socketTimeout: 30000,     // 30 seconds
     logger: true,
     debug: true
   };
@@ -39,7 +41,8 @@ const createTransporter = () => {
   console.log('Email config:', {
     user: config.auth.user,
     hasPassword: !!config.auth.pass,
-    service: config.service
+    host: config.host,
+    port: config.port
   });
   
   const transporter = nodemailer.createTransport(config);
@@ -135,13 +138,27 @@ export const resendVerificationEmail = async (email, token) => {
     console.log('🟡 [EmailService] Creating transporter');
     const transporter = createTransporter();
     
-    try {
-      console.log('🟡 [EmailService] Verifying transporter connection');
-      await transporter.verify();
-      console.log('🟢 [EmailService] Transporter verification OK');
-    } catch (verifyErr) {
-      console.error('🔴 [EmailService] Transporter verification FAILED:', verifyErr?.message);
-      throw verifyErr;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        console.log(`🟡 [EmailService] Verifying transporter connection (attempt ${retryCount + 1}/${maxRetries})`);
+        await transporter.verify();
+        console.log('🟢 [EmailService] Transporter verification OK');
+        break;
+      } catch (verifyErr) {
+        retryCount++;
+        console.error(`🔴 [EmailService] Transporter verification FAILED (attempt ${retryCount}/${maxRetries}):`, verifyErr?.message);
+        
+        if (retryCount >= maxRetries) {
+          throw verifyErr;
+        }
+        
+        // Wait before retry
+        console.log('🟡 [EmailService] Waiting 2 seconds before retry...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
     }
     
     const verificationUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email/${token}`;
