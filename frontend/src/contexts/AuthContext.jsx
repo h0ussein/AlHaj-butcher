@@ -107,6 +107,7 @@ export const AuthProvider = ({ children }) => {
 
   const resendVerification = async (email) => {
     try {
+      console.log('Resending verification email for:', email);
       const response = await fetch(buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION), {
         method: 'POST',
         headers: {
