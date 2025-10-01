@@ -56,6 +56,19 @@ app.get("/api", (req, res) =>{
     res.send("Butcher Shop API is running")
 })
 
+// Debug endpoint to check email configuration
+app.get("/api/debug/email-config", (req, res) => {
+  const config = {
+    hasEmailUser: !!process.env.EMAIL_USER,
+    hasEmailPass: !!process.env.EMAIL_PASS,
+    hasClientUrl: !!process.env.CLIENT_URL,
+    clientUrl: process.env.CLIENT_URL,
+    nodeEnv: process.env.NODE_ENV,
+    emailUser: process.env.EMAIL_USER
+  };
+  res.json(config);
+})
+
 if(process.env.NODE_ENV === 'production'){
 app.use(express.static(path.join(__dirname, '../frontend/dist')))
 console.log(path.join(__dirname, '../frontend/dist'))

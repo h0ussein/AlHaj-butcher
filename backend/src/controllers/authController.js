@@ -59,10 +59,11 @@ export const register = async (req, res) => {
     try {
       const emailResult = await sendVerificationEmail(email, emailVerificationToken);
       if (!emailResult.success) {
-        console.error('Email sending failed:', emailResult.error);
+        console.error('Email sending failed during registration:', emailResult.error);
+        // Still allow registration to succeed, but log the error
       }
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      console.error('Email sending failed during registration:', emailError);
       // Don't fail registration if email fails, just log the error
     }
 
@@ -194,11 +195,18 @@ export const resendVerification = async (req, res) => {
       if (emailResult.success) {
         res.json({ message: 'Verification email sent successfully' });
       } else {
-        res.status(500).json({ message: 'Failed to send verification email' });
+        console.error('Email sending failed:', emailResult.error);
+        res.status(500).json({ 
+          message: 'Failed to send verification email', 
+          error: emailResult.error 
+        });
       }
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
-      res.status(500).json({ message: 'Failed to send verification email' });
+      res.status(500).json({ 
+        message: 'Failed to send verification email',
+        error: emailError.message 
+      });
     }
   } catch (error) {
     console.error('Resend verification error:', error);

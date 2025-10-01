@@ -50,11 +50,16 @@ const createTransporter = () => {
 export const sendVerificationEmail = async (email, token) => {
   try {
     logEmailEnv('sendVerificationEmail:before-check');
-    // For development, allow sending without EMAIL_PASS (will use console log)
+    
+    // Check if we have the required environment variables
     if (!process.env.EMAIL_PASS) {
-      console.log('EMAIL_PASS not set. Logging verification link instead of sending email.');
-      console.log(`Verification URL for ${email}: ${process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email/${token}`);
-      return { success: true, messageId: 'console-log' };
+      console.error('EMAIL_PASS not set in production environment');
+      return { success: false, error: 'Email service not configured' };
+    }
+    
+    if (!process.env.CLIENT_URL) {
+      console.error('CLIENT_URL not set in production environment');
+      return { success: false, error: 'Client URL not configured' };
     }
 
     const transporter = createTransporter();
@@ -109,11 +114,16 @@ export const sendVerificationEmail = async (email, token) => {
 export const resendVerificationEmail = async (email, token) => {
   try {
     logEmailEnv('resendVerificationEmail:before-check');
-    // For development, allow sending without EMAIL_PASS (will use console log)
+    
+    // Check if we have the required environment variables
     if (!process.env.EMAIL_PASS) {
-      console.log('EMAIL_PASS not set. Logging verification link instead of sending email.');
-      console.log(`Verification URL for ${email}: ${process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email/${token}`);
-      return { success: true, messageId: 'console-log' };
+      console.error('EMAIL_PASS not set in production environment');
+      return { success: false, error: 'Email service not configured' };
+    }
+    
+    if (!process.env.CLIENT_URL) {
+      console.error('CLIENT_URL not set in production environment');
+      return { success: false, error: 'Client URL not configured' };
     }
 
     const transporter = createTransporter();
