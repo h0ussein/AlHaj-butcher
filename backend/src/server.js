@@ -32,8 +32,7 @@ app.use(cors({
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, '../../frontend/dist')))
+
 
 // Routes
 app.use('/api/auth', authRoutes)
@@ -53,6 +52,7 @@ app.get("/api", (req, res) =>{
 
 if(process.env.NODE_ENV === 'production'){
 app.use(express.static(path.join(__dirname, '../frontend/dist')))
+console.log(path.join(__dirname, '../frontend/dist'))
 
 app.use( (req, res) => {
   res.sendFile(path.join(__dirname,"/frontend","dist","index.html"));
