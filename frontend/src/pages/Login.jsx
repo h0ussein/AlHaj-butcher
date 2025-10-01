@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +12,7 @@ const Login = () => {
   const [showResendOption, setShowResendOption] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, resendVerification } = useAuth();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
 
@@ -43,25 +42,13 @@ const Login = () => {
   const handleResendVerification = async () => {
     setResendLoading(true);
     try {
-      const response = await fetch(buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: formData.email })
-      });
-
-      const data = await response.json();
+      const result = await resendVerification(formData.email);
       
-      if (response.ok) {
-        alert(language === 'ar' ? 'تم إرسال رابط التحقق بنجاح!' : 'Verification email sent successfully!');
+      if (result.success) {
         setShowResendOption(false);
-      } else {
-        alert(data.message || (language === 'ar' ? 'خطأ في إرسال رابط التحقق' : 'Error sending verification email'));
       }
     } catch (error) {
       console.error('Resend verification error:', error);
-      alert(language === 'ar' ? 'خطأ في الشبكة' : 'Network error');
     } finally {
       setResendLoading(false);
     }
