@@ -30,7 +30,7 @@ app.use(cors({
 } else {
   // Production CORS - allow your production domain
   app.use(cors({
-    origin: process.env.CLIENT_URL || "https://yourdomain.com",
+    origin: process.env.CLIENT_URL || "https://alhaj-butcher.onrender.com",
     credentials: true
   }))
 }
