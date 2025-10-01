@@ -74,7 +74,7 @@ app.use(express.static(path.join(__dirname, '../frontend/dist')))
 console.log(path.join(__dirname, '../frontend/dist'))
 
 // Fallback to index.html for all non-API routes (SPA support)
-app.get('*', (req, res) => {
+app.use((req, res) => {
   // Avoid intercepting API routes
   if (req.path.startsWith('/api/')) {
     return res.status(404).send('API route not found');
