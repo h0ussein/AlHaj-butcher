@@ -10,7 +10,7 @@ const getApiBaseUrl = () => {
   } else {
     // Production: Frontend and backend are served from the same URL
     // API calls will be made to the same domain
-    return window.location.origin;
+    return "";
   }
 };
 

@@ -1,7 +1,6 @@
 import express from 'express'
 import cors from 'cors'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { connectDB } from './config/db.js'
 import dotenv from 'dotenv'
 
@@ -16,18 +15,20 @@ import meatTypeRoutes from './routes/meatTypes.js'
 import whatsappRoutes from './routes/whatsapp.js'
 import userRoutes from './routes/users.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = path.resolve()
 
 dotenv.config()
 const PORT = process.env.PORT || 5001
 const app = express()
 
 // Middleware
+if(process.env.NODE_ENV !== 'production'){
 app.use(cors({
-  origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://localhost:5001'],
+  origin: "http://localhost:5173",
   credentials: true
 }))
+}
+
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
@@ -50,10 +51,14 @@ app.get("/api", (req, res) =>{
     res.send("Butcher Shop API is running")
 })
 
-// Catch all handler: send back React's index.html file for any non-API routes
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'))
-})
+if(process.env.NODE_ENV === 'production'){
+app.use(express.static(path.join(__dirname, '../frontend/dist')))
+
+app.use( (req, res) => {
+  res.sendFile(path.join(__dirname,"/frontend","dist","index.html"));
+});
+
+}
 
 connectDB().then(()=> {
     app.listen(PORT,  () => {
