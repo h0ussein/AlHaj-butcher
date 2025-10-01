@@ -73,8 +73,13 @@ if(process.env.NODE_ENV === 'production'){
 app.use(express.static(path.join(__dirname, '../frontend/dist')))
 console.log(path.join(__dirname, '../frontend/dist'))
 
+// Fallback to index.html for all non-API routes (SPA support)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname,"/frontend","dist","index.html"));
+  // Avoid intercepting API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).send('API route not found');
+  }
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 }
