@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 import MeatTypeManager from './MeatTypeManager';
 
@@ -22,7 +23,7 @@ const AdminProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/products');
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.PRODUCTS));
       const data = await response.json();
       setProducts(data);
     } catch (error) {
@@ -34,7 +35,7 @@ const AdminProducts = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/categories');
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.CATEGORIES));
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -44,7 +45,7 @@ const AdminProducts = () => {
 
   const toggleProductAvailability = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${productId}/toggle-availability`, {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.PRODUCT_BY_ID(productId) + '/toggle-availability'), {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -69,7 +70,7 @@ const AdminProducts = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${productId}`, {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.PRODUCT_BY_ID(productId)), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -294,7 +295,7 @@ const AddProductModal = ({ categories, onClose, onSuccess }) => {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('http://localhost:5001/api/upload/image', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.UPLOAD), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -332,7 +333,7 @@ const AddProductModal = ({ categories, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/products', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.PRODUCTS), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -595,7 +596,7 @@ const EditProductModal = ({ product, categories, onClose, onSuccess }) => {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('http://localhost:5001/api/upload/image', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.UPLOAD), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -633,7 +634,7 @@ const EditProductModal = ({ product, categories, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${product._id}`, {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.PRODUCT_BY_ID(product._id)), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

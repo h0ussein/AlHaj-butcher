@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const VerifyEmailPage = () => {
   const { token } = useParams();
@@ -9,7 +10,7 @@ const VerifyEmailPage = () => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/auth/verify-email/${token}`);
+        const res = await fetch(buildApiUrl(API_ENDPOINTS.VERIFY_EMAIL) + `/${token}`);
         if (res.ok) {
           setStatus('success');
           setTimeout(() => navigate('/login'), 2000);

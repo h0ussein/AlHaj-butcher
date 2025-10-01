@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const MeatTypeManager = ({ product, onClose, onSuccess }) => {
@@ -18,7 +19,7 @@ const MeatTypeManager = ({ product, onClose, onSuccess }) => {
 
   const fetchMeatTypes = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/meat-types/product/${product._id}`);
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.MEAT_TYPES) + `/product/${product._id}`);
       const data = await response.json();
       setMeatTypes(data);
     } catch (error) {
@@ -34,7 +35,7 @@ const MeatTypeManager = ({ product, onClose, onSuccess }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5001/api/meat-types/${meatTypeId}`, {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.MEAT_TYPE_BY_ID(meatTypeId)), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -209,7 +210,7 @@ const AddMeatTypeModal = ({ product, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/meat-types', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.MEAT_TYPES), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -373,7 +374,7 @@ const EditMeatTypeModal = ({ meatType, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:5001/api/meat-types/${meatType._id}`, {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.MEAT_TYPE_BY_ID(meatType._id)), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

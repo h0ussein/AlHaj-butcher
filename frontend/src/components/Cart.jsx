@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const Cart = ({ isOpen, onClose }) => {
@@ -68,7 +69,7 @@ const Cart = ({ isOpen, onClose }) => {
 
       console.log('Sending order data:', orderData);
       
-      const response = await fetch('http://localhost:5001/api/orders', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.ORDERS), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

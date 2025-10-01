@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const CustomOrderModal = ({ onClose }) => {
@@ -25,7 +26,7 @@ const CustomOrderModal = ({ onClose }) => {
         deliveryInfo
       };
 
-      const response = await fetch('http://localhost:5001/api/orders', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.ORDERS), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

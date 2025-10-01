@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const NotificationContext = createContext();
@@ -33,7 +34,7 @@ export const NotificationProvider = ({ children }) => {
     if (!isAdmin || !token) return;
     
     try {
-      const response = await fetch('http://localhost:5001/api/orders?status=pending', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.ORDERS_BY_STATUS('pending')), {
         headers: {
           'Authorization': `Bearer ${token}`
         }

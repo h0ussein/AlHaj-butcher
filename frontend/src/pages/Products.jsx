@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import ProductCard from '../components/ProductCard';
 import CategoryFilter from '../components/CategoryFilter';
 import CustomOrderModal from '../components/CustomOrderModal';
@@ -23,8 +24,8 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       const url = selectedCategory 
-        ? `http://localhost:5001/api/products?category=${selectedCategory}`
-        : 'http://localhost:5001/api/products';
+        ? buildApiUrl(API_ENDPOINTS.PRODUCTS) + `?category=${selectedCategory}`
+        : buildApiUrl(API_ENDPOINTS.PRODUCTS);
       
       const response = await fetch(url);
       const data = await response.json();
@@ -38,7 +39,7 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/categories');
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.CATEGORIES));
       const data = await response.json();
       setCategories(data);
     } catch (error) {

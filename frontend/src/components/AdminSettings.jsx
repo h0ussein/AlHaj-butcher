@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const AdminSettings = () => {
@@ -31,7 +32,7 @@ const AdminSettings = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/settings');
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.SETTINGS));
       const data = await response.json();
       setSettings(data);
       setExchangeRateUSDToLBP(data.exchangeRateUSDToLBP || data.exchangeRate || 90000);
@@ -54,7 +55,7 @@ const AdminSettings = () => {
 
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5001/api/settings/exchange-rates', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.EXCHANGE_RATES), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ const AdminSettings = () => {
 
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:5001/api/settings/min-order-amount', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.MIN_ORDER_AMOUNT), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ const AdminSettings = () => {
 
     setSendingTest(true);
     try {
-      const response = await fetch('http://localhost:5001/api/whatsapp/test', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.WHATSAPP_TEST), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +158,7 @@ const AdminSettings = () => {
   const fetchUsers = async () => {
     try {
       setUsersLoading(true);
-      const response = await fetch('http://localhost:5001/api/users', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.USERS), {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -177,8 +178,8 @@ const AdminSettings = () => {
 
   const toggleUserBan = async (userId, isBanned) => {
     try {
-      const endpoint = isBanned ? `/api/users/${userId}/ban` : `/api/users/${userId}/unban`;
-      const response = await fetch(`http://localhost:5001${endpoint}`, {
+      const endpoint = isBanned ? API_ENDPOINTS.BAN_USER(userId) : API_ENDPOINTS.UNBAN_USER(userId);
+      const response = await fetch(buildApiUrl(endpoint), {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });

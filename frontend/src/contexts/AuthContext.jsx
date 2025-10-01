@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/me', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.GET_CURRENT_USER), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.LOGIN), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -79,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.REGISTER), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

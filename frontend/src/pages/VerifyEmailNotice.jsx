@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const VerifyEmailNotice = () => {
   const [resendLoading, setResendLoading] = useState(false);
@@ -19,7 +20,7 @@ const VerifyEmailNotice = () => {
 
     setResendLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/resend-verification', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

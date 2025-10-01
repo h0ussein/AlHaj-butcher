@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -116,7 +117,7 @@ const Register = () => {
   const handleResendVerification = async () => {
     setResendLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/resend-verification', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

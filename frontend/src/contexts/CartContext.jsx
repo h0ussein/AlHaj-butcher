@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const CartContext = createContext();
 
@@ -122,7 +123,7 @@ export const CartProvider = ({ children }) => {
   const getTotalAmount = async (deliveryApplied = false) => {
     try {
       // Get exchange rates from settings
-      const response = await fetch('http://localhost:5001/api/settings');
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.SETTINGS));
       const settings = await response.json();
       const usdToLbpRate = settings.exchangeRateUSDToLBP || 90000; // USD to LBP rate
       const lbpToUsdRate = settings.exchangeRateLBPToUSD || 89000; // LBP to USD rate

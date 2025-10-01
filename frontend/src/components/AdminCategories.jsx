@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const AdminCategories = () => {
@@ -17,7 +18,7 @@ const AdminCategories = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/categories');
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.CATEGORIES));
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -37,7 +38,7 @@ const AdminCategories = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5001/api/categories/${categoryId}`, {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.CATEGORY_BY_ID(categoryId)), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -143,7 +144,7 @@ const AddCategoryModal = ({ onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/categories', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.CATEGORIES), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

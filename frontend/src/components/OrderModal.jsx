@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import toast from 'react-hot-toast';
 
 const OrderModal = ({ product, selectedMeatType, onClose }) => {
@@ -21,7 +22,7 @@ const OrderModal = ({ product, selectedMeatType, onClose }) => {
   React.useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/settings');
+        const response = await fetch(buildApiUrl(API_ENDPOINTS.SETTINGS));
         const data = await response.json();
         setSettings(data);
       } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 import OrderCard from '../components/OrderCard';
 import toast from 'react-hot-toast';
 
@@ -34,7 +35,7 @@ const Orders = () => {
         setLoading(true);
       }
 
-      const response = await fetch('http://localhost:5001/api/orders/my-orders', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.MY_ORDERS), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
