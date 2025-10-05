@@ -2,7 +2,6 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import Settings from '../models/Settings.js';
-import { sendOrderConfirmationEmail, sendOrderRejectionEmail } from '../utils/emailService.js';
 import { sendWhatsAppMessage, sendOrderStatusUpdate } from '../utils/whatsappService.js';
 
 // Create order
@@ -236,17 +235,7 @@ export const updateOrderStatus = async (req, res) => {
     // Send notifications when order is confirmed
     if (status === 'confirmed' && oldStatus !== 'confirmed') {
       try {
-        // Send email confirmation
-        if (!order.isEmailSent) {
-          await sendOrderConfirmationEmail(order.customer.email, {
-            customerName: `${order.customer.firstName} ${order.customer.lastName}`,
-            orderId: order._id,
-            totalUSD: order.totalAmountUSD,
-            totalLBP: order.totalAmountLBP,
-            status: order.status
-          });
-          order.isEmailSent = true;
-        }
+        // Email confirmation removed - using WhatsApp notifications only
 
         // Send WhatsApp message to customer
         if (!order.isWhatsAppSent) {
@@ -319,8 +308,7 @@ export const updateOrderStatus = async (req, res) => {
           rejectionReason: order.rejectionReason
         };
 
-        // Send email notification
-        await sendOrderRejectionEmail(order.customer.email, orderData);
+        // Email notification removed - using WhatsApp notifications only
         
         // Send WhatsApp notification
         await sendOrderStatusUpdate(order.customer.mobile, 'rejected', orderData);
