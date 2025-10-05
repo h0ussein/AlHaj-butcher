@@ -45,8 +45,7 @@ export const register = async (req, res) => {
       fatherName,
       email,
       password,
-      mobile,
-      isEmailVerified: true // No verification required
+      mobile
     });
 
     await user.save();
@@ -65,8 +64,7 @@ export const register = async (req, res) => {
         fatherName: user.fatherName,
         email: user.email,
         mobile: user.mobile,
-        role: user.role,
-        isEmailVerified: user.isEmailVerified
+        role: user.role
       }
     });
   } catch (error) {
@@ -118,8 +116,7 @@ export const login = async (req, res) => {
         fatherName: user.fatherName,
         email: user.email,
         mobile: user.mobile,
-        role: user.role,
-        isEmailVerified: user.isEmailVerified
+        role: user.role
       }
     });
   } catch (error) {
@@ -141,7 +138,6 @@ export const getCurrentUser = async (req, res) => {
         email: req.user.email,
         mobile: req.user.mobile,
         role: req.user.role,
-        isEmailVerified: req.user.isEmailVerified,
         isBanned: req.user.isBanned
       }
     });

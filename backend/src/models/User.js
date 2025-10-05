@@ -40,15 +40,10 @@ const userSchema = new mongoose.Schema({
     enum: ['customer', 'admin'],
     default: 'customer'
   },
-  isEmailVerified: {
-    type: Boolean,
-    default: false
-  },
   isBanned: {
     type: Boolean,
     default: false
   },
-  emailVerificationToken: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date
 }, {

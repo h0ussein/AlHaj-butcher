@@ -39,7 +39,7 @@ export const LanguageProvider = ({ children }) => {
       confirmPassword: 'Confirm Password',
       alreadyHaveAccount: 'Already have an account?',
       dontHaveAccount: "Don't have an account?",
-      registerSuccess: 'Registration successful! Please check your email for verification.',
+      registerSuccess: 'Registration successful! You are now logged in.',
       loginSuccess: 'Login successful!',
       
       // Products
@@ -94,7 +94,7 @@ export const LanguageProvider = ({ children }) => {
       confirmPassword: 'تأكيد كلمة المرور',
       alreadyHaveAccount: 'لديك حساب بالفعل؟',
       dontHaveAccount: 'ليس لديك حساب؟',
-      registerSuccess: 'تم التسجيل بنجاح! يرجى التحقق من بريدك الإلكتروني للتحقق.',
+      registerSuccess: 'تم التسجيل بنجاح! تم تسجيل دخولك الآن.',
       loginSuccess: 'تم تسجيل الدخول بنجاح!',
       
       // Products

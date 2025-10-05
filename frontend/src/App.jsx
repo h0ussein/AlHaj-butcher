@@ -11,8 +11,6 @@ import Register from './pages/Register';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import Admin from './pages/Admin';
-import VerifyEmailPage from './pages/VerifyEmailPage';
-import VerifyEmailNotice from './pages/VerifyEmailNotice';
 
 const App = () => {
   return (
@@ -29,8 +27,6 @@ const App = () => {
                   <Route path="/products" element={<Products />} />
                   <Route path="/orders" element={<Orders />} />
                   <Route path="/admin" element={<Admin />} />
-                  <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
-                  <Route path="/verify-email-sent" element={<VerifyEmailNotice />} />
                 </Routes>
               </Layout>
             </Router>

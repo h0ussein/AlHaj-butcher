@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +16,6 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [showResendOption, setShowResendOption] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
   
   const { register } = useAuth();
   const { t, language } = useLanguage();
@@ -102,45 +99,13 @@ const Register = () => {
     const result = await register(userData);
     
     if (result.success) {
-      // Redirect to a verify notice page with email
-      navigate(`/verify-email-sent?email=${encodeURIComponent(formData.email)}`);
-    } else {
-      // If registration failed due to existing user, show resend option
-      if (result.error && result.error.includes('already exists')) {
-        setShowResendOption(true);
-      }
+      // Redirect to dashboard after successful registration (user is auto-logged in)
+      navigate('/');
     }
     
     setLoading(false);
   };
 
-  const handleResendVerification = async () => {
-    setResendLoading(true);
-    try {
-      const response = await fetch(buildApiUrl(API_ENDPOINTS.RESEND_VERIFICATION), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: formData.email })
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        alert(language === 'ar' ? 'تم إرسال رابط التحقق بنجاح!' : 'Verification email sent successfully!');
-        setShowResendOption(false);
-        navigate(`/verify-email-sent?email=${encodeURIComponent(formData.email)}`);
-      } else {
-        alert(data.message || (language === 'ar' ? 'خطأ في إرسال رابط التحقق' : 'Error sending verification email'));
-      }
-    } catch (error) {
-      console.error('Resend verification error:', error);
-      alert(language === 'ar' ? 'خطأ في الشبكة' : 'Network error');
-    } finally {
-      setResendLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-md mx-auto">
@@ -496,27 +461,6 @@ const Register = () => {
           </button>
         </form>
 
-        {/* Resend Verification Option */}
-        {showResendOption && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-sm text-yellow-800 mb-3">
-              {language === 'ar' 
-                ? 'يبدو أن لديك حساب بالفعل. هل تريد إعادة إرسال رابط التحقق؟' 
-                : 'It looks like you already have an account. Would you like to resend the verification email?'
-              }
-            </p>
-            <button
-              onClick={handleResendVerification}
-              disabled={resendLoading}
-              className="w-full bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 disabled:opacity-50 transition-colors"
-            >
-              {resendLoading 
-                ? (language === 'ar' ? 'جاري الإرسال...' : 'Sending...')
-                : (language === 'ar' ? 'إعادة إرسال رابط التحقق' : 'Resend Verification Email')
-              }
-            </button>
-          </div>
-        )}
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
