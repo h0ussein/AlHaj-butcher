@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User.js';
-import { sendVerificationEmail, resendVerificationEmail } from '../utils/emailService.js';
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -39,10 +38,7 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: 'A user already exists with this mobile number' });
     }
 
-    // Generate email verification token
-    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
-
-    // Create new user
+    // Create new user (no verification needed)
     const user = new User({
       firstName,
       lastName,
@@ -50,26 +46,18 @@ export const register = async (req, res) => {
       email,
       password,
       mobile,
-      emailVerificationToken
+      isEmailVerified: true // No verification required
     });
 
     await user.save();
 
-    // Send verification email (with error handling)
-    try {
-      const emailResult = await sendVerificationEmail(email, emailVerificationToken);
-      if (!emailResult.success) {
-        console.error('Email sending failed during registration:', emailResult.error);
-        // Still allow registration to succeed, but log the error
-      }
-    } catch (emailError) {
-      console.error('Email sending failed during registration:', emailError);
-      // Don't fail registration if email fails, just log the error
-    }
+    // Generate token for immediate login
+    const token = generateToken(user._id);
 
-    // Do NOT auto-login; require email verification first
+    // Auto-login after successful registration
     res.status(201).json({
-      message: 'User registered successfully. Please check your email for verification.',
+      message: 'User registered successfully',
+      token,
       user: {
         id: user._id,
         firstName: user.firstName,
@@ -115,10 +103,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Block login if not verified
-    if (!user.isEmailVerified) {
-      return res.status(403).json({ message: 'Please verify your email before logging in.' });
-    }
+    // No verification required - allow login
 
     // Generate token
     const token = generateToken(user._id);
@@ -143,89 +128,6 @@ export const login = async (req, res) => {
   }
 };
 
-// Verify email
-export const verifyEmail = async (req, res) => {
-  try {
-    const { token } = req.params;
-
-    const user = await User.findOne({ emailVerificationToken: token });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid verification token' });
-    }
-
-    user.isEmailVerified = true;
-    user.emailVerificationToken = undefined;
-    await user.save();
-
-    res.json({ message: 'Email verified successfully' });
-  } catch (error) {
-    console.error('Email verification error:', error);
-    res.status(500).json({ message: 'Server error during email verification' });
-  }
-};
-
-// Resend verification email
-export const resendVerification = async (req, res) => {
-  try {
-    console.log('🟡 [Backend] Resend verification request received');
-    const { email } = req.body;
-    console.log('🟡 [Backend] Email from request:', email);
-
-    if (!email) {
-      console.log('🔴 [Backend] No email provided');
-      return res.status(400).json({ message: 'Email is required' });
-    }
-
-    // Find user by email
-    console.log('🟡 [Backend] Looking for user with email:', email);
-    const user = await User.findOne({ email });
-    if (!user) {
-      console.log('🔴 [Backend] User not found');
-      return res.status(404).json({ message: 'User not found' });
-    }
-    console.log('🟢 [Backend] User found:', user.email, 'Verified:', user.isEmailVerified);
-
-    // Check if already verified
-    if (user.isEmailVerified) {
-      console.log('🔴 [Backend] Email already verified');
-      return res.status(400).json({ message: 'Email is already verified' });
-    }
-
-    // Generate new verification token
-    console.log('🟡 [Backend] Generating new verification token');
-    const emailVerificationToken = crypto.randomBytes(32).toString('hex');
-    user.emailVerificationToken = emailVerificationToken;
-    await user.save();
-    console.log('🟢 [Backend] New token generated and saved');
-
-    // Send verification email
-    console.log('🟡 [Backend] Attempting to send verification email');
-    try {
-      const emailResult = await resendVerificationEmail(email, emailVerificationToken);
-      console.log('🟡 [Backend] Email service result:', emailResult);
-      
-      if (emailResult.success) {
-        console.log('🟢 [Backend] Email sent successfully');
-        res.json({ message: 'Verification email sent successfully' });
-      } else {
-        console.error('🔴 [Backend] Email sending failed:', emailResult.error);
-        res.status(500).json({ 
-          message: 'Failed to send verification email', 
-          error: emailResult.error 
-        });
-      }
-    } catch (emailError) {
-      console.error('🔴 [Backend] Email sending exception:', emailError);
-      res.status(500).json({ 
-        message: 'Failed to send verification email',
-        error: emailError.message 
-      });
-    }
-  } catch (error) {
-    console.error('🔴 [Backend] Resend verification error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
 // Get current user
 export const getCurrentUser = async (req, res) => {
@@ -248,3 +150,4 @@ export const getCurrentUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+

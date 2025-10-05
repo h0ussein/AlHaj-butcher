@@ -21,8 +21,6 @@ export const API_ENDPOINTS = {
   // Auth
   REGISTER: '/api/auth/register',
   LOGIN: '/api/auth/login',
-  VERIFY_EMAIL: '/api/auth/verify-email',
-  RESEND_VERIFICATION: '/api/auth/resend-verification',
   GET_CURRENT_USER: '/api/auth/me',
   
   // Products

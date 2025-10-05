@@ -9,10 +9,8 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
-  const [showResendOption, setShowResendOption] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
   
-  const { login, resendVerification } = useAuth();
+  const { login } = useAuth();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
 
@@ -26,33 +24,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setShowResendOption(false);
 
     const result = await login(formData.email, formData.password);
     
     if (result.success) {
       navigate('/');
-    } else if (result.error && result.error.includes('verify your email')) {
-      setShowResendOption(true);
     }
     
     setLoading(false);
   };
 
-  const handleResendVerification = async () => {
-    setResendLoading(true);
-    try {
-      const result = await resendVerification(formData.email);
-      
-      if (result.success) {
-        setShowResendOption(false);
-      }
-    } catch (error) {
-      console.error('Resend verification error:', error);
-    } finally {
-      setResendLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-md mx-auto">
@@ -103,27 +84,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Resend Verification Option */}
-        {showResendOption && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-sm text-yellow-800 mb-3">
-              {language === 'ar' 
-                ? 'يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول.' 
-                : 'Please verify your email before logging in.'
-              }
-            </p>
-            <button
-              onClick={handleResendVerification}
-              disabled={resendLoading}
-              className="w-full bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 disabled:opacity-50 transition-colors"
-            >
-              {resendLoading 
-                ? (language === 'ar' ? 'جاري الإرسال...' : 'Sending...')
-                : (language === 'ar' ? 'إعادة إرسال رابط التحقق' : 'Resend Verification Email')
-              }
-            </button>
-          </div>
-        )}
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
